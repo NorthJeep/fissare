@@ -1,39 +1,46 @@
 <script type="text/javascript">
-	function checkSystem()
-	{
-		if($('#ESystem').val() == 0)
-		{
-			alert('Please select a system.');
-		}
-		else
-		{
-			$('#editErrorForm').submit();
-		}
-	}
-	function dataShow(EID,SID,ECode,EType,EVer,EDesc,EName)
-	{
-		$('#ErrorID').val(EID);
-		$('#ESystem').val(SID).change();
-		$('#EType').val(EType).change();
-		$('#EName').val(EName);
-		$('#ECode').val(ECode);
-		$('#EVersion').val(EVer);
-		$('#EDesc').val(EDesc);
-	}
+    function dataShow(ID,HName,AName,AType)
+    {
+    	$('#eAgencyID').val(ID);
+    	$('#eHName').val(HName);
+    	$('#eAName').val(AName);
+    	$('#eAType').val(AType).change();
+    }
+    function dataDelete(ID)
+    {
+    	var dataID = ID;
+    	$.ajax({
+            url: $('#editRoleForm').data('source')+"?delRole=true", 
+            type: "POST",        
+            data: dataID.serialize(),
+            cache: false, 
+			success: function(data)
+			{
+				// alert("here");
+				if(data['mes'] == 'Deleted')
+				{
+					alert('Deleted');
+					window.location.reload();
+				}
+			},
+			error: function(data)
+			{
+				alert('Failed');
+			}
+		});
+    }
+
 	function loadtablelist()
 	{
 		$('#tblList').DataTable().destroy();
 		tblList = $('#tblList').DataTable({
 		 	"processing": true,
-			"ajax": $('#tblList').data('source') +"?getError=true",
+			"ajax": $('#tblList').data('source') +"?getAgency=true",
 			"columns": [
 				{"data": "id"},
-				{"data": "system"},
-				{"data": "code"},
-				{"data": "type"},
-				{"data": "version"},
-				{"data": "name"},
-				{"data": "description"},
+				{"data": "HName"},
+				{"data": "AName"},
+				{"data": "AType"},
 				{"data": "btn"}
 			],
 			"fnDrawCallback": function (oSettings){
@@ -51,23 +58,25 @@
 		});
 	}
 
-	$(document).ready(function (){
+	$(document).ready(function () {
 		loadtablelist();
-		$('#addErrorForm').on('submit', (function (e)
-		{
+		// loadGroupList();
+		// loadUserList();
+		// loadGroupLeaderList();
+		$('#addAgencyForm').on('submit', (function (e) {
 			e.preventDefault();
 			$.ajax({
                 async: true,
-                url: $('#addErrorForm').data('source'), 
+                url: $('#addAgencyForm').data('source'), 
                 type: "POST",        
-                data: $('#addErrorForm').serialize(), 
+                data: $('#addAgencyForm').serialize(), 
                 dataType: 'json',
                 cache: false, 
 				success: function(data)
 				{
 					if(data['mes'] == 'Success')
 					{
-						// alert('Success');
+						alert('Success');
 						window.location.reload();
 					}
 					else if(data['mes'] == 'Duplicate')
@@ -81,31 +90,27 @@
 				}
 			});
 		}));
-		$('#editErrorForm').on('submit', (function (e)
-		{
+		
+		$('#editAgencyForm').on('submit', (function (e) {
 			e.preventDefault();
 			$.ajax({
                 async: true,
-                url: $('#editErrorForm').data('source'), 
+                url: $('#editAgencyForm').data('source'), 
                 type: "POST",        
-                data: $('#editErrorForm').serialize(), 
+                data: $('#editAgencyForm').serialize(), 
                 dataType: 'json',
                 cache: false, 
 				success: function(data)
 				{
 					if(data['mes'] == 'Updated')
 					{
-						alert('Updated');
+						alert('Success');
 						window.location.reload();
-					}
-					else if(data['mes'] == 'Duplicate')
-					{
-						alert('Duplicate Data Entry');
 					}
 				},
 				error: function(data)
 				{
-					
+					alert('Failed');
 				}
 			});
 		}));

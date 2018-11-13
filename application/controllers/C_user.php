@@ -198,6 +198,12 @@ class C_user extends CI_Controller {
 				echo json_encode($record);
 				exit();
 			}
+			if($_POST['act'] == 'edit')
+			{
+				$record = $this->M_admin->error('edit', $_POST);
+				echo json_encode($record);
+				exit();
+			}
 		}
 
 		if(isset($_GET['getError'])) {
@@ -216,6 +222,7 @@ class C_user extends CI_Controller {
 						'<button type="button" class="btn btn-responsive btn-info" onclick="dataShow('.$rec->tet_id.',
 												'.$SID.',
 												`'.$rec->tet_error_code.'`,
+												`'.$rec->tet_error_type.'`,
 												`'.$rec->tet_version.'`,
 												`'.$rec->tet_description.'`,
 												`'.$rec->tet_name.'`)"  
@@ -227,6 +234,7 @@ class C_user extends CI_Controller {
 						'id'	=> $rec->tet_id,
 						'system'	=> $rec->rss_name,
 						'code'	=> $rec->tet_error_code,
+						'type'	=> $rec->tet_error_type,
 						'version'	=> $rec->tet_version,
 						'name'	=> $rec->tet_name,
 						'description'	=> $rec->tet_description,

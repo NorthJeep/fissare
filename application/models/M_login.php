@@ -34,7 +34,7 @@ class M_login extends CI_Model
 							// $sess_array['url'] = base_url('C_user/index');
 							$sess_array['url'] = base_url('C_guest');
 						else
-							$sess_array['url'] = base_url('index');
+							$sess_array['url'] = base_url('C_guest');
 					}
 					$sess_array['IsError'] = 0;
 				}

@@ -62,6 +62,13 @@
                                                     ?>
                                                 </select>
                                             </div>
+                                            <label class="col-md-2 control-label" for="name">Error Type</label>
+                                            <div class="col-md-3">
+                                                <select id="errorType" name="errorType" class="form-control select2" required="true">
+                                                    <option>Software Error</option>
+                                                    <option>Hardware Error</option>
+                                                </select>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="col-md-12 text-right">
@@ -89,8 +96,9 @@
                                         <thead>
                                             <tr>
                                                 <th width="2%">#</th>
-                                                <th width="25%">System Name</th>
+                                                <th width="20%">System Name</th>
                                                 <th width="3%">Code</th>
+                                                <th width="5%">Type</th>
                                                 <th width="3%">Version</th>
                                                 <th width="25%">Error Name</th>
                                                 <th width="40%">Description</th>
@@ -99,6 +107,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -161,7 +170,14 @@
                                         <div class="col-md-6">
                                             <p>
                                                 <label>Error Description</label>
-                                                <textarea id="EDesc" name="EDesc" type="text" placeholder="Error Description" class="form-control" rows="11"></textarea>
+                                                <textarea id="EDesc" name="EDesc" type="text" placeholder="Error Description" class="form-control" rows="8"></textarea>
+                                            </p>
+                                            <p>
+                                                <label>Type</label>
+                                                <select id="EType" name="EType" class="form-control select2" required="true">
+                                                    <option>Software Error</option>
+                                                    <option>Hardware Error</option>
+                                                </select>
                                             </p>
                                         </div>
                                     </div>

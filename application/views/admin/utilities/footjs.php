@@ -9,3 +9,9 @@
    <script src="<?php echo base_url()?>resources/js/josh.js" type="text/javascript"></script>
     <script src="<?php echo base_url()?>resources/js/metisMenu.js" type="text/javascript"> </script>
     <script src="<?php echo base_url()?>resources/vendors/holder-master/holder.js" type="text/javascript"></script>
+    <script type="text/javascript" src="<?php echo base_url()?>vendors/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url()?>vendors/datatables/dataTables.tableTools.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url()?>vendors/datatables/dataTables.colReorder.min.js"></script>
+     <script type="text/javascript" src="<?php echo base_url()?>vendors/datatables/dataTables.scroller.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url()?>vendors/datatables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="<?php echo base_url()?>js/pages/table-advanced.js"></script>

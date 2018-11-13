@@ -1,7 +1,8 @@
 <script type="text/javascript">
-	function dataPass(uID,uName,uContact,uAddress,uEmail,uRole,uRID,uUser,uPass)
+	function dataPass(uID,aID,uName,uContact,uAddress,uEmail,uRole,uRID,uUser,uPass)
 	{	
 		var ID = uID;
+		var AID = aID;
 		var Name = uName;
 		var Contact = uContact;
 		var Address = uAddress;
@@ -11,6 +12,7 @@
 		var User = uUser;
 		var Pass = uPass;
 		
+		$('#uAgency').val(AID).change();
 		$('#userID').val(ID);
 		$('#uName').val(Name);
 		$('#uContact').val(Contact);
@@ -29,9 +31,11 @@
 			"ajax": $('#tblList').data('source') +"?getUser=true",
 			"columns": [
 				{"data": "id"},
+				{"data": "profile"},
 				{"data": "name"},
 				{"data": "email"},
 				{"data": "contact"},
+				{"data": "agency"},
 				{"data": "role"},
 				{"data": "btn"}
 			],
@@ -52,56 +56,95 @@
 
 	$(document).ready(function (){
 		loadtablelist();
+		// $('#addUserForm').on('submit', (function (e)
+		// {
+
+		// 	e.preventDefault();
+		// 	$.ajax({
+  //               async: true,
+  //               url: $('#addUserForm').data('source'), 
+  //               type: "POST",        
+  //               data: $('#addUserForm').serialize(), 
+  //               dataType: 'json',
+  //               cache: false, 
+		// 		success: function(data)
+		// 		{
+		// 			if(data['mes'] == 'Success')
+		// 			{
+		// 				alert('Success');
+		// 				window.location.reload();
+		// 			}
+		// 			else if(data['mes'] == 'Duplicate')
+		// 			{
+		// 				alert('Duplicate Data Entry');
+		// 			}
+		// 		},
+		// 		error: function(data)
+		// 		{
+					
+		// 		}
+		// 	});
+		// }));
 		$('#addUserForm').on('submit', (function (e)
 		{
+			var formData = new FormData($('#addUserForm')[0]);
 			e.preventDefault();
 			$.ajax({
                 async: true,
-                url: $('#addUserForm').data('source'), 
-                type: "POST",        
-                data: $('#addUserForm').serialize(), 
-                dataType: 'json',
-                cache: false, 
+                url: "<?php echo base_url('C_admin/user');?>", 
+	            type:"POST",
+	            data: formData,
+                async : false,
+                cache : false,
+                contentType : false,
+                processData : false,
 				success: function(data)
 				{
-					if(data['mes'] == 'Success')
-					{
-						alert('Success');
-						window.location.reload();
-					}
-					else if(data['mes'] == 'Duplicate')
-					{
-						alert('Duplicate Data Entry');
-					}
+					alert (data);
+					window.location.reload();
+					// if(data['mes'] == 'Success')
+					// {
+					// 	alert('Success');
+					// 	window.location.reload();
+					// }
+					// else if(data['mes'] == 'Duplicate')
+					// {
+					// 	alert('Duplicate Data Entry');
+					// }
 				},
 				error: function(data)
 				{
-					
+					alert('failed');
 				}
 			});
 		}));
 
 		$('#editUserForm').on('submit', (function (e)
 		{
+			var formData = new FormData($('#editUserForm')[0]);
 			e.preventDefault();
 			$.ajax({
                 async: true,
-                url: $('#editUserForm').data('source'), 
-                type: "POST",        
-                data: $('#editUserForm').serialize(), 
-                dataType: 'json',
-                cache: false, 
+                url: "<?php echo base_url('C_admin/user');?>", 
+	            type:"POST",
+	            data: formData,
+                async : false,
+                cache : false,
+                contentType : false,
+                processData : false,
 				success: function(data)
 				{
-					if(data['mes'] == 'Updated')
-					{
-						alert('Updated');
-						window.location.reload();
-					}
-					else if(data['mes'] == 'Duplicate')
-					{
-						alert('Duplicate Data Entry');
-					}
+					alert(data);
+					window.location.reload();
+					// if(data['mes'] == 'Updated')
+					// {
+					// 	alert('Updated');
+					// 	window.location.reload();
+					// }
+					// else if(data['mes'] == 'Duplicate')
+					// {
+					// 	alert('Duplicate Data Entry');
+					// }
 				},
 				error: function(data)
 				{

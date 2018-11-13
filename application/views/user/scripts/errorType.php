@@ -10,10 +10,11 @@
             $('#editErrorForm').submit();
         }
     }
-    function dataShow(EID,SID,ECode,EVer,EDesc,EName)
+    function dataShow(EID,SID,ECode,EType,EVer,EDesc,EName)
     {
         $('#ErrorID').val(EID);
         $('#ESystem').val(SID).change();
+        $('#EType').val(EType).change();
         $('#EName').val(EName);
         $('#ECode').val(ECode);
         $('#EVersion').val(EVer);
@@ -29,6 +30,7 @@
                 {"data": "id"},
                 {"data": "system"},
                 {"data": "code"},
+                {"data": "type"},
                 {"data": "version"},
                 {"data": "name"},
                 {"data": "description"},

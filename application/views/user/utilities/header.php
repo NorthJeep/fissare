@@ -44,9 +44,15 @@
                                     Account Settings
                                 </a>
                             </li> -->
-                            <!-- Menu Footer-->
+                            <!-- Menu Footer-->.
                             <li class="user-footer">
-                                <div class="pull-right">
+                                <div>
+                                    <a href="<?php echo base_url('C_guest')?>">
+                                        <i class="livicon" data-name="home" data-s="18"></i>
+                                        Home
+                                    </a>
+                                </div>
+                                <div>
                                     <a href="<?php echo base_url('C_login/logout')?>">
                                         <i class="livicon" data-name="sign-out" data-s="18"></i>
                                         Logout

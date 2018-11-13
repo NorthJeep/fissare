@@ -15,6 +15,73 @@
 
             <section class="content">
                 <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    <i class="livicon" data-name="users" data-size="16" data-loop="true" data-c="#fff" data-hc="white"></i>
+                                    Error / Issue and Solution Details
+                                </h3>
+                                <span class="pull-right">
+                                    <i class="glyphicon glyphicon-chevron-up clickable active"></i>
+                                    <!-- <i class="glyphicon glyphicon-remove removepanel clickable"></i> -->
+                                </span>
+                            </div>
+                            <div class="panel-body">
+                                <form class="form-horizontal" action="#" id="addErrorForm" name="addErrorForm" data-source="<?php echo base_url('C_admin/Error')?>" novalidate>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" for="name">System Name</label>
+                                            <div class="col-md-3">
+                                                <select id="system" name="system" class="form-control select2" required="true">
+                                                    <option value="0" selected>Nothing Selected</option>
+                                                    <?php
+                                                        foreach($error as $row)
+                                                        {
+                                                            echo '<option value='.$row->rss_id.'> '.$row->rss_name.'</option>';
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <label class="col-md-2 control-label" for="name">Error Type</label>
+                                            <div class="col-md-3">
+                                                <select id="errorType" name="errorType" class="form-control select2" required="true">
+                                                    <option>All</option>
+                                                    <option>Software Error</option>
+                                                    <option>Hardware Error</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" for="name">Error Name</label>
+                                            <div class="col-md-8">
+                                                <select id="error" name="error" class="form-control select2" required="true">
+                                                    <option value="0" selected>Nothing Selected</option>
+                                                   <!--  <?php
+                                                        foreach($error as $row)
+                                                        {
+                                                            echo '<option value='.$row->tet_id.'> '.$row->tet_name.'</option>';
+                                                        }
+                                                    ?> -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12 text-right">
+                                                <input type="hidden" value="add" id="act" name="act">
+                                                <!-- <a type="submit" class="btn btn-responsive btn-info btn-sm">Print</a> -->
+                                                <a target="_blank" id="print-btn" href="#" class="btn btn-default btn-sm float-right">
+                                                  <i class="material-icons">print</i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="panel-body">
                         <div class="demo-container">
                             <div class="col-lg-4">

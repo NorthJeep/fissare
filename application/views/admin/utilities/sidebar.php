@@ -33,6 +33,12 @@
                                         Add User
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="<?php echo base_url('C_admin/Agency');?>">
+                                        <i class="fa fa-angle-double-right"></i>
+                                        Add Agencies
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li>

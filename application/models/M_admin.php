@@ -8,26 +8,50 @@ class M_admin extends CI_Model {
 	public function chart($act){
 		if(isset($act)) {
 			if($act == 'getChart1') {
-				$qry = $this->db->query("SELECT rss.rss_name as name, COUNT(*) as y FROM `tbl_download` as td inner join tbl_error_type as tet on tet.tet_id = td.tet_id inner join r_supported_system as rss on rss.rss_id = tet.rss_id group by rss.rss_name");
+				$qry = $this->db->query("SELECT rss.rss_name as name, 
+										        COUNT(*) as y,
+										        su.su_name as ro_name
+										FROM `tbl_download` as td 
+										inner join tbl_error_type as tet 
+										    on tet.tet_id = td.tet_id 
+										inner join r_supported_system as rss 
+										    on rss.rss_id = tet.rss_id 
+										inner join sys_user as su
+											on rss.su_id = su.su_id
+										group by rss.rss_name");
 				$record = $qry->result();
 				return $record;
 			}
 
 			if($act == 'getChart2') {
-				$qry = $this->db->query("SELECT tet.tet_name as name, COUNT(*) as y FROM `tbl_download` as td 
-                    inner join tbl_error_type as tet 
-                    on tet.tet_id = td.tet_id 
-                    inner join r_supported_system as rss 
-                    on rss.rss_id = tet.rss_id group by tet.tet_name");
+				$qry = $this->db->query("SELECT tet.tet_name as name, 
+												COUNT(*) as y,
+                                                rss.rss_name,
+                                                tet.tet_version,
+                                                su.su_name,
+                                                tet.tet_error_type
+										FROM `tbl_download` as td 
+					                    inner join tbl_error_type as tet 
+					                   		on tet.tet_id = td.tet_id 
+					                    inner join r_supported_system as rss 
+					                    	on rss.rss_id = tet.rss_id 
+                                        inner join sys_user as su
+                                        	on rss.su_id = su.su_id
+                                        group by tet.tet_name");
 				$record = $qry->result();
 				return $record;
 			}
 
 			if($act == 'getChart3') {
-				$qry = $this->db->query("SELECT rss.rss_name as name,count(et.rss_id) as y FROM `tbl_error_type` et
-                                            inner join r_supported_system rss
-                                            on et.rss_id = rss.rss_id
-                                            group by et.rss_id ");
+				$qry = $this->db->query("SELECT rss.rss_name as name,
+												count(et.rss_id) as y,
+										        su.su_name as ro_name 
+										FROM `tbl_error_type` et
+                                        inner join r_supported_system rss
+                                        	on et.rss_id = rss.rss_id
+                                    	inner join sys_user as su
+											on rss.su_id = su.su_id
+                                        group by et.rss_id ");
 				$record = $qry->result();
 				return $record;
 			}
@@ -78,31 +102,126 @@ class M_admin extends CI_Model {
 		}
 	}
 
-	public function user($act, $post) {
-		if(isset($act)) {
-			if($act == 'add') {
-				$check = $this->db->query("SELECT * FROM sys_user WHERE su_username = '{$post['username']}' AND su_password = '{$post['password']}' ");
-				if($check->num_rows() > 0) {
+	public function agency($act, $post) {
+		if (isset($act)) 
+		{
+			if ($act == 'add') {
+				$AName = $post['Agency'];
+				$HName = $post['HeadAgency'];
+				$AType = $post['AgencyType'];
+				$check = $this->db->query('SELECT * FROM tbl_agency WHERE agency_name = "'.$AName.'" AND head_agency_name = "'.$HName.'"');
+				if($check->num_rows() > 0) {		
 					return array('mes' => 'Duplicate');
 				}
 				else {
-					$data = array(
-						'su_name' => $post['name'],
-						'su_email' => $post['email'],
-						'su_contact' => $post['contact'],
-						'su_username' => $post['username'],
-						'su_password' => $post['password'],
-						'e_password' => MD5($post['password']),
-						'sur_id' => $post['role']
+					$add = array(
+						'agency_name' => $AName,
+						'head_agency_name' => $HName,
+						'agency_type' => $AType
 					);
-
-					$this->db->insert('sys_user', $data);
+					$this->db->insert('tbl_agency', $add);	
 					return array('mes' => 'Success');
 				}
 			}
 
 			if($act == 'edit'){
+				$ID = $post['eAgencyID'];
+				$AName = $post['eAName'];
+				$HName = $post['eHName'];
+				$AType = $post['eAType'];
+
+				$dataArray = array(
+					'head_agency_name' => $HName,
+					'agency_name' => $AName,
+					'agency_type' => $AType
+				);
+
+				$this->db->set($dataArray);
+				$this->db->where('agency_id',$ID);
+				$this->db->update('tbl_agency');
+
+				return array('mes' => 'Updated');
+			}
+			if($act == "getAgency")
+			{
+				$qry = $this->db->query('SELECT *,
+										        (CASE
+										            WHEN agency_type = 1
+										                THEN "National"
+										            WHEN agency_type = 2
+										                THEN "Local"
+										            WHEN agency_type = 3
+										                THEN "GOCC"
+										            ELSE "NONE"
+										        END) AS Type
+										    FROM tbl_agency');
+				$result = $qry->result();
+				return $result;
+			}
+
+			// if($act == 'delete')
+			// {
+			// 	return array('mes' => 'Deleted');
+			// }
+		}
+	}
+
+	public function user($act, $post, $file) {
+		if(isset($act)) 
+		{
+			if($act == 'add') 
+			{
+				$a = 0;
+				$b = 0;
+				$result = array();
+				$result = $file['image_file']['name'];
+				$tmp_result = $file['image_file']['tmp_name'];
+				$file = '';
+
+				$check = $this->db->query("SELECT * FROM sys_user WHERE su_username = '{$post['username']}' AND su_password = '{$post['password']}' ");
+				if($check->num_rows() > 0) 
+				{
+					return array('mes' => 'Duplicate');
+				}
+				else 
+				{
+					$sourcePath = $tmp_result;
+					$targetPath = "resources/profile/".$result;
+					move_uploaded_file($sourcePath,$targetPath) ;
+					$file = $result;
+
+					$data = array(
+								'su_name' => $post['name'],
+								'su_email' => $post['email'],
+								'su_contact' => $post['contact'],
+								'su_username' => $post['username'],
+								'su_password' => $post['password'],
+								'e_password' => MD5($post['password']),
+								'sur_id' => $post['role'],
+								'su_profile' => $file
+					);
+
+					$this->db->insert('sys_user', $data);
+				}
+			return array('mes' => 'Success');
+		}
+
+			if($act == 'edit'){
 				
+				if($file['eProfile']['tmp_name'] != "")
+				{
+					$result = array();
+					$result = $file['eProfile']['name'];
+					$tmp_result = $file['eProfile']['tmp_name'];
+					$file = '';
+
+					$sourcePath = $tmp_result;
+					$targetPath = "resources/profile/".$result;
+					move_uploaded_file($sourcePath,$targetPath) ;
+					$file = $result;
+				}
+				
+
 				$uID = $post['userID'];
 				$uName = $post['uName'];
 				$uRole = $post['uRole'];
@@ -111,27 +230,41 @@ class M_admin extends CI_Model {
 				$uEmail = $post['uEmail'];
 				$uUser = $post['uUser'];
 				$uPass = $post['uPass'];
+				$uAgency = $post['uAgency'];
 
-				$dataArray = array(
-						'su_name' => $uName,
-						'su_email' => $uEmail,
-						'su_contact' => $uContact,
-						'su_address' => $uAddress,
-						'su_username' => $uUser,
-						'su_password' => $uPass,
-						'e_password' => MD5($uPass),
-						'sur_id' => $uRole
+				if($file['eProfile']['tmp_name'] != "")
+				{
+					$dataArray = array(
+							'su_name' => $uName,
+							'su_email' => $uEmail,
+							'su_contact' => $uContact,
+							'su_agency' => $uAgency,
+							'su_address' => $uAddress,
+							'su_username' => $uUser,
+							'su_password' => $uPass,
+							'e_password' => MD5($uPass),
+							'sur_id' => $uRole,
+							'su_profile' => $file
 					);
+				}
+				else
+				{
+					$dataArray = array(
+							'su_name' => $uName,
+							'su_email' => $uEmail,
+							'su_contact' => $uContact,
+							'su_agency' => $uAgency,
+							'su_address' => $uAddress,
+							'su_username' => $uUser,
+							'su_password' => $uPass,
+							'e_password' => MD5($uPass),
+							'sur_id' => $uRole
+					);
+				}
 
-
-				// $dataArray = array(
-				// 	'sur_name' => $post['roleEdit'],
-
-				// );
 				$this->db->set($dataArray);
 				$this->db->where('su_id',$uID);
 				$this->db->update('sys_user'); 
-				// gives UPDATE sys_user_role SET sur_name = $post['roleEdit'] WHERE sur_id = $post['roleEditID']
 
 				return array('mes' => 'Updated');
 			}
@@ -146,9 +279,14 @@ class M_admin extends CI_Model {
 										        , su.su_password as s_password
 										        , ur.sur_id as r_id
 										        , ur.sur_name as r_name
+										        , su.su_profile as s_profile
+                                                , IFNULL(ta.agency_id,0) as t_agency_id
+                                                , IFNULL(ta.agency_name,'') as t_agency
 										FROM sys_user AS su
 										INNER JOIN sys_user_role AS ur
-										ON ur.sur_id = su.sur_id");
+										ON ur.sur_id = su.sur_id
+                                        LEFT JOIN tbl_agency AS ta 
+                                        ON su.su_agency = ta.agency_id");
 				$result = $qry->result();
 				return $result;
 			}
@@ -165,6 +303,7 @@ class M_admin extends CI_Model {
 				else {
 					$data = array(
 						'tet_error_code' => $post['code'],
+						'tet_error_type' => $post['errorType'],
 						'tet_version' => $post['version'],
 						'tet_name' => $post['name'],
 						'tet_description' => $post['description'],
@@ -179,6 +318,7 @@ class M_admin extends CI_Model {
 			if($act == 'edit') {
 				$EID = $post['ErrorID'];
 				$EName = $post['EName'];
+				$EType = $post['EType'];
 				$RSSID = $post['ESys'];
 				$ECode = $post['ECode'];
 				$EVersion = $post['EVersion'];
@@ -186,6 +326,7 @@ class M_admin extends CI_Model {
 
 				$dataArray = array(
 						'tet_error_code' => $ECode,
+						'tet_error_type' => $EType,
 						'tet_version' => $EVersion,
 						'tet_name' => $EName,
 						'tet_description' => $EDesc,
@@ -200,9 +341,58 @@ class M_admin extends CI_Model {
 				return array('mes' => 'Updated');
 			}
 
+			if($act == 'getError2') {
+				$cond2 = '';
+				$cond = '';
+				if(isset($post['sysID']))
+				{
+					$sysID = $post['sysID'];
+					$cond = ' WHERE RSS.rss_id ='.$sysID.'';
+					if(isset($post['eType']))
+					{	
+						if($post['eType'] == 'All')
+						{
+							$cond2 = '';
+						}
+						else
+						{
+							$cond2 =' AND TET.`tet_error_type` = "'.$post['eType'].'"';
+						}
+					}
+				}
+				else
+				{
+					$cond2 = '';
+					$cond = '';
+				}
+				
+
+
+				$qry = $this->db->query("SELECT TET.`tet_id`,
+												TET.`tet_error_code`,
+												TET.`tet_error_type`,
+										        TET.`tet_version`,
+										        TET.`tet_name`,
+										        TET.`tet_description`,
+										        TET.`tet_instruction`,
+										        TET.`su_id`,
+										        TET.`timestamp`,
+										        IFNULL(RSS.`rss_id`,'') AS `rss_id`,
+										        IFNULL(RSS.`rss_name`,'') AS `rss_name`,
+										        IFNULL(RSS.`rss_timestamp`,'') AS `rss_timestamp`
+										FROM `tbl_error_type` AS TET
+										LEFT JOIN r_supported_system AS RSS
+											ON TET.rss_id = RSS.rss_id 
+										{$cond} {$cond2}
+										");
+				$record = $qry->result();
+				return $record;
+			}
+
 			if($act == 'getError1') {
 				$qry = $this->db->query("SELECT TET.`tet_id`,
 												TET.`tet_error_code`,
+												TET.`tet_error_type`,
 										        TET.`tet_version`,
 										        TET.`tet_name`,
 										        TET.`tet_description`,
@@ -227,6 +417,7 @@ class M_admin extends CI_Model {
 					$cond = 'WHERE TET.su_id ='.$temp.'';
 					$qry = $this->db->query("SELECT TET.`tet_id`,
 												TET.`tet_error_code`,
+												TET.`tet_error_type`,
 										        TET.`tet_version`,
 										        TET.`tet_name`,
 										        TET.`tet_description`,
@@ -244,6 +435,7 @@ class M_admin extends CI_Model {
 					$cond = '';
 					$qry = $this->db->query("SELECT TET.`tet_id`,
 												TET.`tet_error_code`,
+												TET.`tet_error_type`,
 										        TET.`tet_version`,
 										        TET.`tet_name`,
 										        TET.`tet_description`,
@@ -466,8 +658,7 @@ class M_admin extends CI_Model {
 		}
 	}
 
-	public function datamine($act, $post, $input)
-	{
+	public function datamine($act, $post, $input){
 		if(isset($act)){
 			if($act == 'add') {
 				$file_name = $post;    

@@ -32,7 +32,27 @@
 
 		return tblList;
 	}
-
+	function ErrorPrint(){
+		var sysID = $('#system').val();
+		var eType = $('#errorType').val();
+		$.ajax({
+			url:'<?php echo base_url('C_admin/index');?>',
+			type:'POST',
+			data:{sysID:sysID,eType:eType,act:'ErrorPrint'},
+			dataType:'json',
+			cache:false,
+			success:function(data)
+			{
+				// alert(data.output);
+				$('#error').empty();
+				$('#error').html(data.output);
+			},
+			error:function()
+			{
+				alert('error');
+			}
+		});
+	}
 	// window.onload = loadtablelist;
 
 
@@ -41,6 +61,19 @@
 		MostSearchError();
 		MostSearchApp();
 		MostNumberOfVisit();
+
+		$('#system').on('change',function(){
+			ErrorPrint();
+		});
+		$('#errorType').on('change',function(){
+			ErrorPrint();
+		});
+		$(document).on('change','#error',function(){
+			var error = $('#error').val();
+			// alert(error);
+			document.getElementById('print-btn').href = '<?php echo base_url('C_guest/print');?>?Error='+error+'';
+			return false;
+		});
 		// loadGroupList();
 		// loadUserList();
 		// loadGroupLeaderList();
@@ -128,7 +161,7 @@
 		                allowPointSelect: true,
 		                cursor: 'pointer',
 		                dataLabels: {
-		                    enabled: false
+		                    enabled: false,
 		                },
 		                showInLegend: true
 		            }

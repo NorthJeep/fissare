@@ -69,9 +69,28 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <label class="col-md-2 control-label" for="profile">Logo*</label>
+                                            <div class="col-md-3">
+                                                <input id="profile" name="image_file" type="file" placeholder="Insert Picture" class="form-control" enctype="multipart/form-data" required="true">
+                                            </div>
+                                            <label class="col-md-2 control-label" for="role">Agency *</label>
+                                            <div class="col-md-3">
+                                                <select id="Agency" name="Agency" class="form-control select2">
+
+                                                    <option disabled selected> Select Role </option>
+                                                    <?php
+                                                        foreach($agency as $row)
+                                                        {
+                                                            echo '<option value='.$row->agency_id.'> '.$row->agency_name.'</option>';
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <div class="col-md-12 text-right">
                                                 <input type="hidden" value="add" id="act" name="act">
-                                                <button type="submit" class="btn btn-responsive btn-info btn-sm">Sign in</button>
+                                                <button type="submit" class="btn btn-responsive btn-info btn-sm">Add User</button>
                                             </div>
                                         </div>
                                     </fieldset>
@@ -94,15 +113,19 @@
                                         <thead>
                                             <tr>
                                                 <th width="5%">#</th>
-                                                <th width="40%">Name</th>
+                                                <th width="5%">Logo</th>
+                                                <th width="25%">Name</th>
                                                 <th width="25%">Email Address</th>
                                                 <th width="10%">Contact No.</th>
+                                                <th width="10%">Agency</th>
                                                 <th width="15%">User Role</th>
                                                 <th width="5%">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
+                                                <td></td>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -178,6 +201,23 @@
                                             <p>
                                                 <label>Confirm Password</label>
                                                 <input id="uConfirm" name="uConfirm" type="password" placeholder="Confirm Password" class="form-control">
+                                            </p>
+                                            <p>
+                                                <label>Change Profile</label>
+                                                <input id="eProfile" name="eProfile" type="file" placeholder="eProfile" class="form-control"  enctype="multipart/form-data" >
+                                            </p>
+                                            <p>
+                                                <label class="control-label" for="role">Agency *</label>
+                                                <select id="uAgency" name="uAgency" class="form-control select2">
+
+                                                    <option disabled selected> Select Role </option>
+                                                    <?php
+                                                        foreach($agency as $row)
+                                                        {
+                                                            echo '<option value='.$row->agency_id.'> '.$row->agency_name.'</option>';
+                                                        }
+                                                    ?>
+                                                </select>
                                             </p>
                                         </div>
                                     </div>

@@ -31,7 +31,11 @@ class M_user extends CI_Model {
 
 			if($act == 'td') {
 
-				$data = array('tet_id' => $_GET['tet_id']);
+				$data = array(
+					'tet_id' => $_GET['tet_id'],
+					'td_user' => $this->session->userdata('id'),
+					'td_date' => $this->db->select('NOW() as db_date')->get()->row()->db_date
+					);
 				$this->db->insert('tbl_download', $data);
 			}
 

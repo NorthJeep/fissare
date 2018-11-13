@@ -6,6 +6,7 @@ class C_admin extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->load->helper('download');
+		$this->load->helper('form');
 		$this->load->library('session');
 		//$this->index();
 	}
@@ -31,7 +32,102 @@ class C_admin extends CI_Controller {
 	// }
 
 	public function index() {
-
+		if(isset($_GET['getMSE'])){
+			$record = $this->M_admin->chart('getChart2');
+			if (count($record) != 0) {
+				foreach ($record as $rec) {
+					$data[] = array(
+						'name'	=> $rec->name,
+						'count'	=> $rec->y,
+						'rss_name' => $rec->rss_name,
+						'tet_version' => $rec->tet_version,
+						'su_name' => $rec->su_name,
+						'tet_error_type' => $rec->tet_error_type
+						);
+				}
+			}
+			else {
+				$data = 0;
+			}
+			$output = array(
+	                   	"recordsTotal"    => count($record),
+	                    "recordsFiltered" => count($record),
+	                    "data"            => $data
+	                );
+			echo json_encode($output);
+			exit();
+		}
+		if(isset($_GET['getMSA'])){
+			$record = $this->M_admin->chart('getChart1');
+			if (count($record) != 0) {
+				foreach ($record as $rec) {
+					$data[] = array(
+						'name'	=> $rec->name,
+						'count'	=> $rec->y,
+						'ro_name' => $rec->ro_name
+						);
+				}
+			}
+			else {
+				$data = 0;
+			}
+			$output = array(
+	                   	"recordsTotal"    => count($record),
+	                    "recordsFiltered" => count($record),
+	                    "data"            => $data
+	                );
+			echo json_encode($output);
+			exit();
+		}
+		if(isset($_GET['getMNU'])){
+			$record = $this->M_admin->chart('getChart3');
+			if (count($record) != 0) {
+				foreach ($record as $rec) {
+					$data[] = array(
+						'name'	=> $rec->name,
+						'count'	=> $rec->y,
+						'ro_name' => $rec->ro_name
+						);
+				}
+			}
+			else {
+				$data = 0;
+			}
+			$output = array(
+	                   	"recordsTotal"    => count($record),
+	                    "recordsFiltered" => count($record),
+	                    "data"            => $data
+	                );
+			echo json_encode($output);
+			exit();
+		}
+		if(isset($_POST['act'])){
+			if($_POST['act'] == 'ErrorPrint')
+			{
+				$output = '';
+				$ErrorList = $this->M_admin->error('getError2',$_POST);
+				if(count($ErrorList) > 0)
+				{
+					$output .= '<option selected>Nothing Selected</option>';
+					foreach($ErrorList as $rec)
+					{
+						
+						$output .= '<option value="'.$rec->tet_id.'">'.$rec->tet_name.'</option>';
+					}
+				}
+				else
+				{
+					$output .= '<option>No Errors</option>';
+				}
+				$dataArray = array(
+					'output' => $output
+				);
+				echo json_encode($dataArray);
+				exit();
+			}
+		}
+		$data['system'] = $this->M_admin->system_supported('getSystem1', '');
+		// $data['error'] = $this->M_admin->error('getError1','');
 		$data['chart'] = $this->M_admin->chart('getChart1');
 		$data['chart2'] = $this->M_admin->chart('getChart2');
 		$data['chart3'] = $this->M_admin->chart('getChart3');
@@ -119,20 +215,20 @@ class C_admin extends CI_Controller {
 		if(isset($_POST['act'])) {
 			if($_POST['act'] == 'add') 
 			{
-				$record = $this->M_admin->user('add', $_POST);
+				$record = $this->M_admin->user('add', $_POST, $_FILES);
 				echo json_encode($record);
 				exit();
 			}
 			if($_POST['act'] == 'edit')
 			{
-				$record = $this->M_admin->user('edit', $_POST);
+				$record = $this->M_admin->user('edit', $_POST, $_FILES);
 				echo json_encode($record);
 				exit();
 			}
 		}
 
 		if(isset($_GET['getUser'])) {
-			$record = $this->M_admin->user('getUser','');
+			$record = $this->M_admin->user('getUser','','');
 			if (count($record) != 0) {
 				foreach ($record as $rec) {
 					$id = $rec->s_id;
@@ -144,6 +240,9 @@ class C_admin extends CI_Controller {
 					$rid = $rec->r_id;
 					$suser = $rec->s_username;
 					$spass = $rec->s_password;
+					$tagency = $rec->t_agency;
+					$tangencyid = $rec->t_agency_id;
+					$sprofile = '<img src="'.base_url().'resources/profile/'.$rec->s_profile.'" style="max-height:100px;" />';
 					
 					// $btn = '<div class="btn-group">'.
 					// 	'<button type="button" class="btn-responsive button-alignment btn-info" onclick="edit_('.$rec->s_id .')"  
@@ -156,6 +255,7 @@ class C_admin extends CI_Controller {
 								<button type="button" class="btn btn-responsive btn-info" data-toggle="modal" data-href="#responsive" href="#responsive"
 								onclick="dataPass(
 										'.$id.',
+										'.$tangencyid.',
 										`'.$name.'`,
 										'.$contact.',
 										`'.$address.'`,
@@ -172,11 +272,13 @@ class C_admin extends CI_Controller {
 				
 					$data[] = array(
 						'id'	=> $rec->s_id,
+						'agency' => $rec->t_agency,
 						'name'	=> $rec->s_name,
 						'email'	=> $rec->s_email,
 						'contact'	=> $rec->s_contact,
 						'role'	=> $rec->r_name,
-						'btn'	=> $btn
+						'btn'	=> $btn,
+						'profile' => $sprofile
 						);
 				}
 
@@ -194,6 +296,7 @@ class C_admin extends CI_Controller {
 		}
 
 		$data['role'] = $this->M_admin->role('getRole', '');
+		$data['agency'] = $this->M_admin->agency('getAgency','');
 
 		$this->load->view('admin/utilities/headcss');
 		$this->load->view('css/admincss');
@@ -232,9 +335,11 @@ class C_admin extends CI_Controller {
 					}
 
 					$btn = '<div class="btn-group">'.
-						'<button type="button" class="btn btn-responsive btn-info" onclick="dataShow('.$rec->tet_id.',
+						'<button type="button" class="btn btn-responsive btn-info" onclick="
+										dataShow('.$rec->tet_id.',
 												'.$SID.',
 												`'.$rec->tet_error_code.'`,
+												`'.$rec->tet_error_type.'`,
 												`'.$rec->tet_version.'`,
 												`'.$rec->tet_description.'`,
 												`'.$rec->tet_name.'`)"  
@@ -246,6 +351,7 @@ class C_admin extends CI_Controller {
 						'id'	=> $rec->tet_id,
 						'system'	=> $rec->rss_name,
 						'code'	=> $rec->tet_error_code,
+						'type'	=> $rec->tet_error_type,
 						'version'	=> $rec->tet_version,
 						'name'	=> $rec->tet_name,
 						'description'	=> $rec->tet_description,
@@ -557,6 +663,73 @@ class C_admin extends CI_Controller {
 		$this->load->view('admin/request');
 		$this->load->view('admin/utilities/footjs');
 		$this->load->view('admin/scripts/request');
+	}
+
+	public function agency(){
+
+		if(isset($_POST['act']))
+		{
+			if($_POST['act'] == 'add')
+			{
+				$record = $this->M_admin->agency('add',$_POST);
+				echo json_encode($record);
+				exit();
+			}
+			if($_POST['act'] == 'edit')
+			{
+				$record = $this->M_admin->agency('edit',$_POST);
+				echo json_encode($record);
+				exit();
+			}
+		}
+		if(isset($_GET['getAgency']))
+		{
+			$record = $this->M_admin->agency('getAgency','');
+			if(count($record) > 0)
+			{
+				foreach($record as $rec)
+				{
+					$btn = '<div class="btn-group">'.
+						'<button type="button" class="btn btn-responsive btn-info" onclick="
+										dataShow('.$rec->agency_id.',
+												`'.$rec->head_agency_name.'`,
+												`'.$rec->agency_name.'`,
+												'.$rec->agency_type.')"  
+							data-toggle="modal" data-href="#responsive" href="#responsive" style="width: 80px;"><i class="fa fa-fw fa-cog"></i> EDIT
+								</button>&nbsp;
+							</div>';
+				
+					$data[] = array(
+						'id'	=> $rec->agency_id,
+						'HName'	=> $rec->head_agency_name,
+						'AName'	=> $rec->agency_name,
+						'AType'	=> $rec->Type,
+						'btn'	=> $btn
+						);
+				}
+			}
+			else
+			{
+				$data = 0;
+			}
+			$output = array(
+	                   	"recordsTotal"    => count($record),
+	                    "recordsFiltered" => count($record),
+	                    "data"            => $data
+	                );
+
+			echo json_encode($output);
+			exit();
+		}
+
+
+		$this->load->view('admin/utilities/headcss');
+		$this->load->view('css/admincss');
+		$this->load->view('admin/utilities/header');
+		$this->load->view('admin/utilities/sidebar');
+		$this->load->view('admin/Agency');
+		$this->load->view('admin/utilities/footjs');
+		$this->load->view('admin/scripts/agency');
 	}
 }
 ?>
